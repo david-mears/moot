@@ -1,0 +1,147 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MooT</title>
+</head>
+<body>
+  <h1>MooT game</h1>
+  <p>I sourced the answers and questions from <a href="https://www.mootgame.com/ansarchive/mootlist_question.html">the newsletter archive</a> to make a remotely playable version of <a href="https://www.mootgame.com/">the game</a>.</p>
+  <p>(In so saying, I do not mean to imply that the retail version of the game is 'not remotely playable'. I merely intend to say that it is hard to play a board game remotely without some form of computerized intervention. This is that intervention.)</p>
+  <p><a href="https://mootgame.com/mrules.html">Rules</a></p>
+  <button id="loadButton">Load a random card</button>
+  <br>
+  <p id="cardCounter" style="display: none">
+    This is the <span id="cumulative">0</span><sup id="superscript">th</sup> of <span id="total">the</span> shuffled cards.
+  </p>
+  <div id="questionSection" style="display: none">
+    <h2>Question:</h2>
+    <p id="questionParagraph"></p>
+    <button id="revealAnswerButton">Reveal answer</button>
+  </div>
+  <div id="answerSection" style="display: none">
+    <h2>Answer:</h2>
+    <h3 id="answerParagraph"></h3>
+    <p id="answerDetailsParagraph"></p>
+  </div>
+  <script>
+    // This function was written in Ruby, then converted to JS at http://intertwingly.net/projects/ruby2js.cgi/all, then edited a lot
+
+    // Go to the public archive of moot newsletter questions at https://www.mootgame.com/ansarchive/mootlist_question.html
+    const Http = new XMLHttpRequest();
+    // Bypass CORS with proxy
+    const url='https://cors-anywhere.herokuapp.com/https://www.mootgame.com/ansarchive/mootlist_question.html';
+    Http.open("GET", url);
+    Http.send();
+
+    Http.onreadystatechange = (e) => {
+      if (e.currentTarget.readyState != 4 || e.currentTarget.status != 200) {
+        return false;
+      } else {
+        source = Http.responseText
+
+        source = source.replace(/<br>/g, "");
+
+        // Get sections
+        var sections = source.split("<hr noshade=\"noshade\" SIZE=\"10\">\n")
+
+        // Censor the 'dyke' question
+        sections.map(function(section) {
+          if (section.includes('dyke')) {
+            return sections.indexOf(section)
+            if (index > -1) {
+              section.splice(index, 1);
+            }
+          }
+        })
+
+        // -2: ignore last section
+        var sectionsWithoutReaderFeedback = sections.map(function(section) {
+          return section.substr(0, section.indexOf("<FORM ACTION"))
+        });
+
+        var sectionsSubdivided = sectionsWithoutReaderFeedback.map(function(html) {
+          return html.replace(/<\/?[^>]*>/g, "").replace(/\n\n+/g, "\n").replace(
+            /^\n|\n$/gm,
+            ""
+          ).split("\n")
+        });
+
+        // Scrub out the headers etc from the first section
+        firstSection = sectionsSubdivided[0]
+
+        var mootTitleIndex = 0;
+
+        for (var i = 0; i < firstSection.length; i++) {
+          if (firstSection[i].includes("MooT - the etymology")) {
+            mootTitleIndex = i;
+          }
+        }
+
+        var scrubbedFirstSection = firstSection.slice((mootTitleIndex + 1), (firstSection.length + 1));
+
+        sectionsSubdivided[0] = scrubbedFirstSection;
+
+        var sectionsDividedIntoQuestionAndAnswer = sectionsSubdivided.map(function(section) {
+          var answerLabelIndex = 0;
+
+          for (var i = 0; i < section.length; i++) {
+            if (section[i].includes("Answer:")) {
+              answerLabelIndex = i;
+            }
+          }
+          var question = (section.slice(0, answerLabelIndex)).join(" ");
+          var answer = section[answerLabelIndex + 1];
+          var answerDetails = (section.slice(answerLabelIndex + 2, section.length + 1)).join(" ");
+          return [question, answer, answerDetails]
+        });
+
+        // Shuffle
+        cards = sectionsDividedIntoQuestionAndAnswer.sort(() => Math.random() - 0.5);
+        }
+
+      loadButton = document.getElementById('loadButton')
+      questionSection = document.getElementById('questionSection')
+      answerSection = document.getElementById('answerSection')
+      revealAnswerButton = document.getElementById('revealAnswerButton')
+      questionParagraph = document.getElementById('questionParagraph')
+      answerParagraph = document.getElementById('answerParagraph')
+      answerDetailsParagraph = document.getElementById('answerDetailsParagraph')
+      total = document.getElementById('total')
+      cumulative = document.getElementById('cumulative')
+      cardCounter = document.getElementById('cardCounter')
+      superscript = document.getElementById('superscript')
+
+      total.innerText = cards.length;
+
+      let cardNumber = -1;
+
+      loadButton.addEventListener('click', function (event) {
+        cardNumber++;
+        count = cardNumber + 1;
+        cumulative.innerText = count;
+        if ((count % 10 == 1) && (count % 100 != 11)) {
+          superscript.innerText = 'st'
+        } else if ((count % 10 == 2) && (count % 100 != 12)) {
+          superscript.innerText = 'nd'
+        } else if ((count % 10 == 3) && (count % 100 != 13)) {
+          superscript.innerText = 'rd'
+        } else {
+          superscript.innerText = 'th'
+        }
+        cardCounter.style.display = 'initial';
+        answerSection.style.display = 'none';
+        questionSection.style.display = 'initial';
+        questionParagraph.innerText = cards[cardNumber][0];
+      }, false);
+
+      revealAnswerButton.addEventListener('click', function (event) {
+        answerSection.style.display = 'initial';
+        answerParagraph.innerText = cards[cardNumber][1];
+        answerDetailsParagraph.innerText = cards[cardNumber][2];
+      }, false);
+    }
+  </script>
+</body>
+</html>
