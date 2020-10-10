@@ -6,26 +6,35 @@
   <title>MooT</title>
   <link rel="stylesheet" href="https://edwardtufte.github.io/tufte-css/tufte.css"/>
 </head>
-<body>
+<body class="sans">
   <h1>MooT</h1>
-  <p>I sourced the answers and questions from <a href="https://www.mootgame.com/ansarchive/mootlist_question.html">the newsletter archive</a> to make a remotely playable version of <a href="https://www.mootgame.com/">the game</a>.</p>
-  <p>(In so saying, I do not mean to imply that the retail version of the game is 'not remotely playable'. I merely intend to say that it is hard to play a board game remotely without some form of computerized intervention. This is that intervention.)</p>
-  <p><a href="https://mootgame.com/mrules.html">Rules</a></p>
-  <button id="loadButton">Load a random card</button>
-  <br>
-  <p id="cardCounter" style="display: none">
-    This is the <span id="cumulative">0</span><sup id="superscript">th</sup> of <span id="total">the</span> shuffled cards.
-  </p>
-  <div id="questionSection" style="display: none">
-    <h2>Question:</h2>
-    <p id="questionParagraph"></p>
-    <button id="revealAnswerButton">Reveal answer</button>
-  </div>
-  <div id="answerSection" style="display: none">
-    <h2>Answer:</h2>
-    <h3 id="answerParagraph"></h3>
-    <p id="answerDetailsParagraph"></p>
-  </div>
+  <article style="padding-top: 0px;">
+    <section>
+      <p><a href="https://mootgame.com/mrules.html">Rules</a>
+        <label for="mn-disclaimer" class="margin-toggle">&#8853;</label>
+        <input type="checkbox" id="mn-disclaimer" class="margin-toggle"/>
+        <span class="marginnote">
+          I sourced the answers and questions from <a href="https://www.mootgame.com/ansarchive/mootlist_question.html">the newsletter archive</a> to make a remotely playable version of <a href="https://www.mootgame.com/">the game</a>.
+          (In so saying, I do not mean to imply that the retail version of the game is 'not remotely playable'. I merely intend to say that it is hard to play a board game remotely without some form of computerized intervention. This is that intervention.)
+        </span>
+      </p>
+      <button id="loadButton">Load a random card</button>
+      <br>
+      <p id="cardCounter" style="display: none">
+        This is the <span id="cumulative">0</span><sup id="superscript">th</sup> of <span id="total">the</span> shuffled cards.
+      </p>
+    </section>
+    <section id="questionSection" style="display: none">
+      <h2>Question:</h2>
+      <p id="questionParagraph"></p>
+      <button id="revealAnswerButton">Reveal answer</button>
+    </section>
+    <section id="answerSection" style="display: none">
+      <h2>Answer:</h2>
+      <h3 id="answerParagraph"></h3>
+      <p id="answerDetailsParagraph"></p>
+    </section>
+  </article>
   <script>
     // This function was written in Ruby, then converted to JS at http://intertwingly.net/projects/ruby2js.cgi/all, then edited a lot
 
